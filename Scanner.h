@@ -52,7 +52,7 @@ private:
 
 public:
     //constructor that accepts user grammar
-    //in form of string
+    //in form of a string
     Scanner(string);
     ~Scanner();
 
