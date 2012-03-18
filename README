@@ -1,0 +1,12 @@
+First phase of TSSParser, which is to check whether user supplied grammar is valid, is done. If
+bugs are found, contact me.
+
+To run this program, enter following commands
+
+$ make
+$ ./test.out
+
+To edit the grammar, open Test.cc
+Change grammar that is passed through the constructor
+
+-Archesh
