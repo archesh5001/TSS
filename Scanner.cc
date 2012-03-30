@@ -14,12 +14,13 @@
 
 using namespace std;
 
-Scanner::Scanner(string grammar) {
-    this->grammar = removeWhiteSpaces(grammar);
+Scanner::Scanner(string &grammar) {
+    this->grammar = &grammar;
+    removeWhiteSpaces();
     index = -1;
     errors = false;
     //grammar = removeWhiteSpaces(grammar);
-    cout << "Grammar : " << this->grammar << endl;
+    //cout << "Grammar : " << *(this->grammar) << endl;
 
 }
 
@@ -28,7 +29,7 @@ Scanner::~Scanner() {
 }
 
 bool Scanner::scan() {
-    if (grammar.length() != 0)
+    if (grammar->length() != 0)
         return Program();
     else {
         cout << "WARNING : No grammar was passed\n";
@@ -56,7 +57,7 @@ bool Scanner::Stmt() {
             ch = getNextChar();
             if (ch == '>') {
                 ch = getNextChar();
-                if (ch == ':') {
+                if (ch == '-') {
                     ch = getNextChar();
                     if (ch == '=') {
 
@@ -271,8 +272,8 @@ int Scanner::isAlphaNumeric() {
 
 char Scanner::getNextChar() {
     ++index;
-    if (index < (int) grammar.length()) {
-        return grammar.at(index);
+    if (index < (int) grammar->length()) {
+        return grammar->at(index);
     } else
         return '\0';
 }
@@ -281,14 +282,15 @@ void Scanner::decrementIndex() {
     --index;
 }
 
-string Scanner::removeWhiteSpaces(string str) {
+void Scanner::removeWhiteSpaces() {
     string temp = "";
     string::iterator it;
-    for (it = str.begin(); it < str.end(); it++) {
+    for (it = grammar->begin(); it < grammar->end(); it++) {
         if (isspace((int) *it))
             continue;
         temp += *it;
     }
 
-    return temp;
+    grammar->clear();
+    grammar->append(temp);
 }

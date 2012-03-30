@@ -3,7 +3,7 @@
  * The grammar used for this scanner is given below
  * 
  * Program   ::= stmt+
- * stmt      ::= '<' Taghead '>' ':=' (Tag Reference* | Taglist Reference*)+ ';'
+ * stmt      ::= '<' Taghead '>' '-=' (Tag Reference* | Taglist Reference*)+ ';'
  * Taghead   ::= Name ':' Flag
  * Taglist   ::= Tag '[]'
  * Tag       ::= '<' Name ':' Flag '>'
@@ -29,7 +29,7 @@ using namespace std;
 
 class Scanner {
 private:
-    string grammar;
+    string * grammar;
     int index;
     char ch;
     bool errors;
@@ -47,13 +47,13 @@ private:
 
     void decrementIndex();
     int isAlphaNumeric();
-    string removeWhiteSpaces(string);
+    void removeWhiteSpaces();
 
 
 public:
     //constructor that accepts user grammar
     //in form of a string
-    Scanner(string);
+    Scanner(string &);
     ~Scanner();
 
     //scans the given string and returns
