@@ -34,15 +34,68 @@ bool TSSParser :: validateGrammar() {
         
         char * tokens;
         string * stok;
-        tokens = strtok (grammarC, " <>;=");
+        tokens = strtok (grammarC, "<>-=");
         while(tokens != NULL) {
             stok = new string (tokens);
             cout << *stok << endl;
             tokens = strtok(NULL, "<>-=");
-            //break;
+            //buildTree(*stok);
             delete stok;
         }
     }
     return true;
     
 }
+
+
+void TSSParser :: buildTree(string &str) {
+    //There are 4 possible strings that come in here
+    //1. onjectName : objectType
+    //2. ;
+    //3. [];
+    //4. [](*pointerName);
+    
+    //type 1
+    if(str.compare(";") == 0) {
+        //find the next child in map
+        return;
+    } else if(str.compare("[];") == 0) {
+        //this means that previous node that we built
+        //is list. Set the list flag
+        cout << "It is [];\n";
+    }else {
+        bool isHead = false;
+        if(str.at(0) != '[') {
+            //we have type 1
+            string :: iterator iter;
+            string temp ("");
+            for(iter = str.begin(); iter < str.end(); iter++){
+                if(*iter == ':') {
+                    //store objectName and start extracting flag type
+                    if(grammarTree == NULL) {
+                        isHead = true;
+                         grammarTree = new Node();
+                        grammarTree->name = temp;
+                    }else {
+                        current = grammarTree->child;
+                        while(current->next != NULL)
+                            current = current->next;
+                        current = new Node();
+                        current->name = temp;
+                    }
+                    temp = "";
+                    iter++;
+                } 
+                
+                temp += *iter;
+            }
+            if(isHead)
+                 grammarTree->objectType = temp;
+            else
+                current->objectType = temp;
+        }
+    }
+}
+
+
+

@@ -28,22 +28,24 @@ class TSSParser
        struct Node
         {
             string name;                // Name of the node
+            string objectType;
             Type type;                  // Data type iif isBO
             int no_of_children;         // No. of chilren
-            bool isBO;                  // is it a BO
-            bool isSO;                  // is it a SO
-            bool isList;                // is it a list
-            bool isRef;                 // is is a RO
+            bool visited;               // Track if SO node has been visited
             int pos;                    // Position in the list of children
             map <string, Node *> children; //pointers to children
+            Node * parent;
+            Node * child;
+            Node * next;
         };
 
         Node *grammarTree;      // Actual data structure to store the grammar
+        Node * current;
         string * grammar;
         
-
+        Node * getParentNode();
        
-        void buildTree();
+        void buildTree(string &);
 
 
     public:
