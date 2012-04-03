@@ -17,6 +17,7 @@
 #include <cstring>
 #include <map>
 #include <string>
+#include <list>
 
 using namespace std;
 
@@ -39,13 +40,20 @@ class TSSParser
             Node * next;
         };
 
-        Node *grammarTree;      // Actual data structure to store the grammar
-        Node * current;
+        Node *head;      // Actual data structure to store the grammar
+        Node *current;
         string * grammar;
+        
+        list<Node*> nodes;
         
         Node * getParentNode();
        
+        //makes a copy of 'b' and stores it in 'a'
+        //this function is need to store heads in vector
+        void copy(Node *a, Node *b);
+        
         void buildTree(string &);
+        void print();
 
 
     public:
