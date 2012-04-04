@@ -8,6 +8,7 @@
 using namespace std;
 
 TSSParser::TSSParser() {
+    childCounter = 0;
 }
 
 TSSParser::TSSParser(string grammar, bool isFile) {
@@ -62,42 +63,77 @@ void TSSParser::buildTree(string &str) {
 
     //type 1
     if (str.compare(";") == 0) {
-        Node * temp = head;
-        cout << "Headt: " << temp->name << endl;
-        temp = head->child;
-        do{
-            cout << "Childt: " << temp->name << endl;
-            temp = temp->next;
-        }while(temp != NULL);
-        
+
         //store curent head in vector
         Node * myHead = new Node;
-        copy (myHead, head);
+        copy(myHead, head);
         nodes.push_back(myHead);
         head = NULL;
-
+        childCounter = 0;
     } else if (str.compare("[];") == 0) {
         //this means that previous node that we built
         //is list. Set the list flag
         //cout << "It is [];\n";
+        current->isList = true;
         Node * myHead = new Node;
-        copy (myHead, head);
+        copy(myHead, head);
         nodes.push_back(myHead);
         head = NULL;
-       // nodes.push_back(head);
+        childCounter = 0;
     } else {
         //There are 2 cases here.
         //case 1 and 4
         if (str.at(0) == '[') {
-            //cout << "Ignoring " << str << " for now\n";
-            Node * myHead = new Node;
-            copy (myHead, head);
-            nodes.push_back(myHead);
-            head = NULL;
+            //first this means that current object is list object
+            current->isList = true;
+            //extract pointer name
+            string::iterator iter;
+            string temp = "";
+            for (iter = str.begin(); iter < str.end(); iter++) {
+                if (*iter == '[' || *iter == ']' || *iter == '(' || *iter == '*')
+                    continue;
+                if (*iter == ')')
+                    break;
+                temp += *iter;
+            }
+
+            //got the name, now create new node for it
+            current = new Node();
+            if (head->no_of_children == 0) {
+                head->child = current;
+                current->parent = head;
+                current->pos = childCounter;
+                current->name = temp;
+                current->objectType = "RO";
+                ++childCounter;
+                ++head->no_of_children;
+            } else {
+                Node * tempN = head->child;
+                while (tempN->next != NULL)
+                    tempN = tempN->next;
+
+                current->name = temp;
+                current->objectType = "RO";
+                current->pos = childCounter;
+                current->parent = head;
+
+                tempN->next = current;
+                ++head->no_of_children;
+                ++childCounter;
+            }
+
+            //check if last value of string is ;
+            if (str.at(str.size() - 1) == ';') {
+                //we are done building current tree. 
+                Node * myHead = new Node;
+                copy(myHead, head);
+                nodes.push_back(myHead);
+                head = NULL;
+                childCounter = 0;
+            }
             //nodes.push_back(head);
         } else {
             if (head == NULL) {
-                cout << "creating head\n";
                 head = new Node();
                 head->no_of_children = 0;
                 current = head;
@@ -105,31 +141,32 @@ void TSSParser::buildTree(string &str) {
                 //create new child node
                 current = new Node();
                 if (head->no_of_children == 0) {
-                    cout << "creating first child\n";
                     //only create 1 pointer to first child
                     head->child = current;
                     current->parent = head;
-                    current->next = NULL;
+                    current->pos = childCounter;
                     ++head->no_of_children;
+                    ++childCounter;
                 } else {
-                    cout << "Creating > 1 child\n";
                     //link child with its sibling
                     Node * temp = head->child;
                     while (temp->next != NULL)
                         temp = temp->next;
                     temp->next = current;
                     current->parent = head;
+                    current->pos = childCounter;
                     ++head->no_of_children;
+                    ++childCounter;
                 }
             }
+
             //extract name and type from the given string
-            string temp;
+            string temp = "";
             string::iterator iter;
             for (iter = str.begin(); iter < str.end(); iter++) {
                 if (*iter == ':') {
                     //this is our name
                     current->name = temp;
-                    cout << "Current name is: " << current->name << endl;
                     temp = "";
                     ++iter;
                 }
@@ -138,26 +175,43 @@ void TSSParser::buildTree(string &str) {
 
             //this is our type
             current->objectType = temp;
-            cout << "Current type is: " << current->objectType << endl;
+            //set appropriate flag
+            if ((temp.compare("SO")) == 0)
+                current->isSO = true;
+            else if ((temp.compare("RO")) == 0)
+                current->isRO = true;
+            else current->isBO = true;
+
         }
     }
 }
 
 void TSSParser::print() {
-    while(!nodes.empty()) {
+    while (!nodes.empty()) {
         head = nodes.front();
-        cout << "Head: " << head->name << " Type: " << head->objectType 
-                << " Children: " << head->no_of_children << endl;
+        cout << "(Head): " << head->name << " (Type): " << head->objectType
+                << " (Children): " << head->no_of_children;
+        if (head->isBO) cout << " (BO) ";
+        else if (head->isRO) cout << " (RO) ";
+        else if (head->isSO) cout << " (SO) ";
+        if (head->isList) cout << " (List) ";
+        cout << endl;
         current = head->child;
+                     
         do {
-            cout << "Child: " << current->name << " Type: " << current->objectType << endl; 
-            current = current->next;  
-        }while(current != NULL);
+            cout << "\t(Child " << current->pos << "): " << current->name << " (Type): " << current->objectType;
+            if (current->isBO) cout << " (BO) ";
+            else if (current->isRO) cout << " (RO) ";
+            else if (current->isSO) cout << " (SO) ";
+            if (current->isList) cout << " (List) ";
+            cout << endl;
+            current = current->next;
+        } while (current != NULL);
         nodes.pop_front();
     }
 }
 
-void TSSParser :: copy(Node *a, Node *b) {
+void TSSParser::copy(Node *a, Node *b) {
     a->child = b->child;
     a->children = b->children;
     a->name = b->name;
@@ -168,4 +222,8 @@ void TSSParser :: copy(Node *a, Node *b) {
     a->pos = b->pos;
     a->type = b->type;
     a->visited = b->visited;
+    a->isBO = b->isBO;
+    a->isList = b->isList;
+    a->isRO = b->isRO;
+    a->isSO = b->isSO;
 }

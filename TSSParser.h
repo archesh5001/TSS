@@ -32,18 +32,37 @@ class TSSParser
             string objectType;
             Type type;                  // Data type iif isBO
             int no_of_children;         // No. of chilren
+            bool isBO;                  // Tracks if nodes is BO
+            bool isSO;
+            bool isRO;
+            bool isList;                
             bool visited;               // Track if SO node has been visited
             int pos;                    // Position in the list of children
             map <string, Node *> children; //pointers to children
             Node * parent;
             Node * child;
             Node * next;
+            
+            Node() {
+                name = "";
+                objectType = "";
+                no_of_children = 0;
+                isBO = false;
+                isRO = false;
+                isSO = false;
+                isList = false;
+                visited = false;
+                pos = -1;
+                parent = NULL;
+                child = NULL;
+                next = NULL;
+            }
         };
 
         Node *head;      // Actual data structure to store the grammar
         Node *current;
         string * grammar;
-        
+        int childCounter;
         list<Node*> nodes;
         
         Node * getParentNode();
