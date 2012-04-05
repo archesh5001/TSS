@@ -3,6 +3,7 @@
 #include "Scanner.h"
 #include <cstring>
 #include <map>
+#include <queue>
 #include <string>
 #include <iostream>
 using namespace std;
@@ -47,7 +48,9 @@ bool TSSParser::validateGrammar() {
         }
         delete grammarC;
     }
-    cout << "vector size: " << nodes.size() << endl;
+    //cout << "vector size: " << nodes.size() << endl;
+    // print();
+    linkTrees();
     print();
     return true;
 
@@ -186,6 +189,79 @@ void TSSParser::buildTree(string &str) {
     }
 }
 
+void TSSParser::linkTrees() {
+    //remove first head from the list
+    head = new Node();
+    copy(head, nodes.front());
+    delete nodes.front();
+    nodes.pop_front();
+
+    //init queue for BFS
+    queue <Node*> myQueue;
+
+    current = head->child;
+    while (current != NULL) {
+        if (current->isSO)
+            myQueue.push(current);
+        current = current->next;
+    }
+
+
+    //fire up BFS. Note that we won't have any cycles in our graph, 
+    //and such, we will not need to check whether a node has been already visited
+    while (!myQueue.empty()) {
+        current = new Node();
+        copy(current, myQueue.front());
+        delete myQueue.front();
+        myQueue.pop();
+
+        //find current in list
+        bool found = false;
+        int i = 0;
+        while (i < nodes.size()) {
+            cout << "Current name= " << current->name << ":: Front: " << nodes.front()->name << endl;
+            if (current->name.compare(nodes.front()->name) == 0) {
+                cout << "Match found\n";
+                found = true;
+                //link the 2 nodes, push it in queue, and remove it from the list
+                Node * temp = new Node();
+                copy(temp, nodes.front());
+                delete nodes.front();
+                nodes.pop_front();
+
+                //push children
+                temp = temp->child;
+                while (temp != NULL) {
+                    if (temp->isSO)
+                        myQueue.push(temp);
+                   temp = temp->next;
+                }
+
+
+                //delete temp;
+                break;
+            }
+
+            Node * temp = new Node();
+            copy(temp, nodes.front());
+            delete nodes.front();
+            nodes.pop_front();
+            nodes.push_back(temp);
+
+            ++i;
+        }
+
+        if (!found) {
+            cout << "ERROR! " << current->name <<" is not defined\n";
+            break;
+        }
+
+        found = false;
+        delete current;
+    }
+
+}
+
 void TSSParser::print() {
     while (!nodes.empty()) {
         head = nodes.front();
@@ -197,7 +273,7 @@ void TSSParser::print() {
         if (head->isList) cout << " (List) ";
         cout << endl;
         current = head->child;
-                     
+
         do {
             cout << "\t(Child " << current->pos << "): " << current->name << " (Type): " << current->objectType;
             if (current->isBO) cout << " (BO) ";

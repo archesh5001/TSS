@@ -71,7 +71,16 @@ class TSSParser
         //this function is need to store heads in vector
         void copy(Node *a, Node *b);
         
+        //this function makes individual tree of each line
+        //provided in the grammar. Then, it stores the head
+        //of each tree in the list.
         void buildTree(string &);
+        
+        //this function links all the trees together in to 1 tree
+        //using BFS algorithm
+        void linkTrees();
+        
+        //this function prints the individual trees stored in the list
         void print();
 
 
