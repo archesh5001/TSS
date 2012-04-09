@@ -71,6 +71,8 @@ class TSSParser
         //this function is need to store heads in vector
         void copy(Node *a, Node *b);
         
+        void copySpecial(Node *a ,Node *b, Node *c);
+        
         //this function makes individual tree of each line
         //provided in the grammar. Then, it stores the head
         //of each tree in the list.

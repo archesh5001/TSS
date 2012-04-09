@@ -49,7 +49,7 @@ bool TSSParser::validateGrammar() {
         delete grammarC;
     }
     //cout << "vector size: " << nodes.size() << endl;
-    // print();
+    //print();
     linkTrees();
     print();
     return true;
@@ -125,6 +125,12 @@ void TSSParser::buildTree(string &str) {
                 ++childCounter;
             }
 
+            //link this child to the head
+            if(head->child != NULL) 
+                head->children.insert(pair<string ,Node*>(current->name, current));
+                
+            
+                        
             //check if last value of string is ;
             if (str.at(str.size() - 1) == ';') {
                 //we are done building current tree. 
@@ -184,12 +190,17 @@ void TSSParser::buildTree(string &str) {
             else if ((temp.compare("RO")) == 0)
                 current->isRO = true;
             else current->isBO = true;
-
+            
+            //link this child to the head
+            if(head->child != NULL)
+                head->children.insert(pair<string ,Node*>(current->name, current));
+            
         }
     }
 }
 
 void TSSParser::linkTrees() {
+    cout << "Linking started\n";
     //remove first head from the list
     head = new Node();
     copy(head, nodes.front());
@@ -199,7 +210,9 @@ void TSSParser::linkTrees() {
     //init queue for BFS
     queue <Node*> myQueue;
 
+    //cout << head->name << "'s children: " << head->children.size() << endl;
     current = head->child;
+    
     while (current != NULL) {
         if (current->isSO)
             myQueue.push(current);
@@ -215,20 +228,22 @@ void TSSParser::linkTrees() {
         delete myQueue.front();
         myQueue.pop();
 
+      
         //find current in list
         bool found = false;
         int i = 0;
         while (i < nodes.size()) {
-            cout << "Current name= " << current->name << ":: Front: " << nodes.front()->name << endl;
+            //cout << "Current name= " << current->name << ":: Front: " << nodes.front()->name << endl;
             if (current->name.compare(nodes.front()->name) == 0) {
-                cout << "Match found\n";
+               // cout << "Match found\n";
                 found = true;
                 //link the 2 nodes, push it in queue, and remove it from the list
                 Node * temp = new Node();
-                copy(temp, nodes.front());
+                copy(temp, current);
                 delete nodes.front();
                 nodes.pop_front();
 
+                // cout << temp->name << "'s children: " << temp->children.size() << endl;
                 //push children
                 temp = temp->child;
                 while (temp != NULL) {
@@ -263,38 +278,61 @@ void TSSParser::linkTrees() {
 }
 
 void TSSParser::print() {
-    while (!nodes.empty()) {
-        head = nodes.front();
-        cout << "(Head): " << head->name << " (Type): " << head->objectType
-                << " (Children): " << head->no_of_children;
-        if (head->isBO) cout << " (BO) ";
-        else if (head->isRO) cout << " (RO) ";
-        else if (head->isSO) cout << " (SO) ";
-        if (head->isList) cout << " (List) ";
-        cout << endl;
-        current = head->child;
-
-        do {
-            cout << "\t(Child " << current->pos << "): " << current->name << " (Type): " << current->objectType;
-            if (current->isBO) cout << " (BO) ";
-            else if (current->isRO) cout << " (RO) ";
-            else if (current->isSO) cout << " (SO) ";
-            if (current->isList) cout << " (List) ";
-            cout << endl;
-            current = current->next;
-        } while (current != NULL);
-        nodes.pop_front();
+    cout << "Printing\n";
+    queue <Node*> printQueue;
+    
+    printQueue.push(head);
+    
+    while(!printQueue.empty()) {
+        Node * temp = printQueue.front();
+        cout << "Parent: " << temp->name << endl;
+        
+        int size = temp->children.size();
+         cout << "children: " << size << endl; 
+        //push children
+        temp = temp->child;
+       
+        for(int i = 0; i < size; i++) {
+            cout << "i: " << i << endl;
+            cout << "\tChild: " << temp->parent->children.at(temp->name)->name << endl;
+            if(temp->isSO)
+                printQueue.push(temp->parent->children.at(temp->name));
+            temp = temp->next;
+        }
+        
+        //pop parent
+        printQueue.pop();
     }
+        
 }
 
 void TSSParser::copy(Node *a, Node *b) {
     a->child = b->child;
-    a->children = b->children;
+    a->children.insert(b->children.begin(), b->children.end());
+   // a->children.swap(b->children);
+    //cout <<"A size: " << a->children.size() << ":: B size: " << b->children.size() << endl;
     a->name = b->name;
     a->next = b->next;
     a->no_of_children = b->no_of_children;
     a->objectType = b->objectType;
     a->parent = b->parent;
+    a->pos = b->pos;
+    a->type = b->type;
+    a->visited = b->visited;
+    a->isBO = b->isBO;
+    a->isList = b->isList;
+    a->isRO = b->isRO;
+    a->isSO = b->isSO;
+    //cout << "copy " << a->name << endl;
+}
+
+void TSSParser :: copySpecial(Node* a, Node* b, Node *c) {
+    a->child = b->child;
+    a->children.insert(b->children.begin(), b->children.end());
+    a->name = b->name;
+    a->next = b->next;
+    a->no_of_children = b->no_of_children;
+    a->objectType = b->objectType;
     a->pos = b->pos;
     a->type = b->type;
     a->visited = b->visited;
