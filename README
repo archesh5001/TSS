@@ -1,12 +1,27 @@
-First phase of TSSParser, which is to check whether user supplied grammar is valid, is done. If
-bugs are found, contact me.
+What's done
+-----------
+1) Check syntax of the given grammar
+2) If syntax is valid, build a tree structure of the given grammar
+3) If a SO object is not defined (i.e, it is defined as SO on RHS of the grammar, but not defined on LHS) then
+throw "Object undefined" error 
+
+Things to do
+------------
+1) Generate access code of a given path (in string format) 
+2) isBO, isRO, is isSO function whose parameter is a path (in string format)
+3) Read grammar directly from txt file instead of supplying it as string
+
+Bugs
+-----
+If any bugs are found, contact me at archesh5001@gmail.com
+
 
 To run this program, enter following commands
 
 $ make
 $ ./test.out
 
-To edit the grammar, open Test.cc
+To edit the grammar, open test.cc
 Change grammar that is passed through the constructor
 
 -Archesh
