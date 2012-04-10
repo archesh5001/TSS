@@ -21,6 +21,31 @@ To run this program, enter following commands
 $ make
 $ ./test.out
 
+Output of the given grammar in test.cc is as follow
+---------------------------------------------------
+
+Parent: Region1 :: children: 3
+  Child(0): regionLabel
+	Child(1): face
+	Child(2): index
+
+Parent: face :: children: 3
+	Child(0): faceLabel
+	Child(1): outerCycle
+	Child(2): holeCycle
+
+Parent: index :: children: 2
+	Child(0): indexLabel
+	Child(1): SegmentIndex
+
+Parent: outerCycle :: children: 2
+	Child(0): segment
+	Child(1): segmentIndex
+
+Parent: holeCycle :: children: 1
+	Child(0): segment
+
+
 To edit the grammar, open test.cc
 Change grammar that is passed through the constructor
 
