@@ -41,7 +41,7 @@ bool TSSParser::validateGrammar() {
         tokens = strtok(grammarC, "<>-=");
         while (tokens != NULL) {
             stok = new string(tokens);
-            cout << *stok << endl;
+            //cout << *stok << endl;
             tokens = strtok(NULL, "<>-=");
             buildTree(*stok);
             delete stok;
@@ -223,10 +223,10 @@ void TSSParser::linkTrees() {
     //fire up BFS. Note that we won't have any cycles in our graph, 
     //and such, we will not need to check whether a node has been already visited
     while (!myQueue.empty()) {
-        current = new Node();
-        copy(current, myQueue.front());
-        delete myQueue.front();
-        myQueue.pop();
+        
+        //copy(current, myQueue.front());
+        //delete myQueue.front();
+        current = myQueue.front();
 
       
         //find current in list
@@ -238,20 +238,18 @@ void TSSParser::linkTrees() {
                // cout << "Match found\n";
                 found = true;
                 //link the 2 nodes, push it in queue, and remove it from the list
-                Node * temp = new Node();
-                copy(temp, current);
+                               
+                linkNodes(current, nodes.front());
                 delete nodes.front();
                 nodes.pop_front();
-
-                // cout << temp->name << "'s children: " << temp->children.size() << endl;
-                //push children
-                temp = temp->child;
-                while (temp != NULL) {
-                    if (temp->isSO)
-                        myQueue.push(temp);
-                   temp = temp->next;
+                
+                 //push children
+                current = current->child;
+                while(current != NULL) {
+                    if(current->isSO)
+                        myQueue.push(current);
+                    current = current->next;
                 }
-
 
                 //delete temp;
                 break;
@@ -272,7 +270,8 @@ void TSSParser::linkTrees() {
         }
 
         found = false;
-        delete current;
+        //delete current;
+        myQueue.pop();
     }
 
 }
@@ -285,16 +284,14 @@ void TSSParser::print() {
     
     while(!printQueue.empty()) {
         Node * temp = printQueue.front();
-        cout << "Parent: " << temp->name << endl;
-        
         int size = temp->children.size();
-         cout << "children: " << size << endl; 
+        cout << "\nParent: " << temp->name << " :: children: " << size << endl;
+        
         //push children
         temp = temp->child;
        
         for(int i = 0; i < size; i++) {
-            cout << "i: " << i << endl;
-            cout << "\tChild: " << temp->parent->children.at(temp->name)->name << endl;
+            cout << "\tChild("<<i<<"): " << temp->parent->children.at(temp->name)->name << endl;
             if(temp->isSO)
                 printQueue.push(temp->parent->children.at(temp->name));
             temp = temp->next;
@@ -309,8 +306,6 @@ void TSSParser::print() {
 void TSSParser::copy(Node *a, Node *b) {
     a->child = b->child;
     a->children.insert(b->children.begin(), b->children.end());
-   // a->children.swap(b->children);
-    //cout <<"A size: " << a->children.size() << ":: B size: " << b->children.size() << endl;
     a->name = b->name;
     a->next = b->next;
     a->no_of_children = b->no_of_children;
@@ -323,21 +318,10 @@ void TSSParser::copy(Node *a, Node *b) {
     a->isList = b->isList;
     a->isRO = b->isRO;
     a->isSO = b->isSO;
-    //cout << "copy " << a->name << endl;
 }
 
-void TSSParser :: copySpecial(Node* a, Node* b, Node *c) {
+void TSSParser :: linkNodes(Node* a, Node* b) {
     a->child = b->child;
     a->children.insert(b->children.begin(), b->children.end());
-    a->name = b->name;
-    a->next = b->next;
     a->no_of_children = b->no_of_children;
-    a->objectType = b->objectType;
-    a->pos = b->pos;
-    a->type = b->type;
-    a->visited = b->visited;
-    a->isBO = b->isBO;
-    a->isList = b->isList;
-    a->isRO = b->isRO;
-    a->isSO = b->isSO;
 }

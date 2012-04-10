@@ -43,6 +43,7 @@ class TSSParser
             Node * child;
             Node * next;
             
+            
             Node() {
                 name = "";
                 objectType = "";
@@ -56,7 +57,7 @@ class TSSParser
                 parent = NULL;
                 child = NULL;
                 next = NULL;
-            }
+           }
         };
 
         Node *head;      // Actual data structure to store the grammar
@@ -71,7 +72,7 @@ class TSSParser
         //this function is need to store heads in vector
         void copy(Node *a, Node *b);
         
-        void copySpecial(Node *a ,Node *b, Node *c);
+        void linkNodes(Node *a ,Node *b);
         
         //this function makes individual tree of each line
         //provided in the grammar. Then, it stores the head
