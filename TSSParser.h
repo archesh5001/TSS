@@ -18,10 +18,20 @@
 #include <map>
 #include <string>
 #include <list>
+#include <vector>
 
 using namespace std;
 
 enum Type {Int, IntAR, Double, DoubleAR, String, Byte};
+
+//struct used to hold path information :: building block of a PATH object
+struct PathComponent
+{
+	string label;
+	int accessCode;
+	//Locator loc;
+};
+
 class TSSParser
 {
     private:
@@ -86,6 +96,9 @@ class TSSParser
         //this function prints the individual trees stored in the list
         void print();
 
+        //visit all nodes and delete it to free up memory
+        void cleanUp();
+        
 
     public:
 
@@ -95,6 +108,10 @@ class TSSParser
         ~TSSParser();
          bool validateGrammar();   // Validate the given grammar
         
+        //This function will break the objects from path string, and store corresponding
+        //label and accesscode in pathVector. If the given string path is invalid, then
+        //this function will return false
+        bool storeAccessCode(string path, vector<PathComponent> &pathVector); 
         
         int* genAccessCode(Path p);           // Generate access code
 
@@ -104,5 +121,5 @@ class TSSParser
         bool isRef(Path p);
 
         Type getBOType(Path p);
-        bool validatePath(Node *, string Name); // Validate a given path
+        //bool validatePath(Node *, string Name); // Validate a given path
 };
