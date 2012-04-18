@@ -15,6 +15,7 @@
 #include "Path.h"
 #include "Scanner.h"
 #include <cstring>
+#include <cstdlib>
 #include <map>
 #include <string>
 #include <list>
@@ -24,13 +25,7 @@ using namespace std;
 
 enum Type {Int, IntAR, Double, DoubleAR, String, Byte};
 
-//struct used to hold path information :: building block of a PATH object
-struct PathComponent
-{
-	string label;
-	int accessCode;
-	//Locator loc;
-};
+
 
 class TSSParser
 {
@@ -75,7 +70,6 @@ class TSSParser
         string * grammar;
         int childCounter;
         list<Node*> nodes;
-        
         Node * getParentNode();
        
         //makes a copy of 'b' and stores it in 'a'
@@ -113,13 +107,24 @@ class TSSParser
         //this function will return false
         bool storeAccessCode(string path, vector<PathComponent> &pathVector); 
         
+        //This function will simply get pathVector from Path p object and
+        //extract the access code from it. It will then return an int array
+        //that contains the access code.
         int* genAccessCode(Path p);           // Generate access code
 
+        //This following 4 functions will traverse the grammar tree
+        //and check whether the last object specified in path is BO, 
+        // SO, List, or Ref.
         bool isBO(Path p);
         bool isSO(Path p);
         bool isList(Path p);
         bool isRef(Path p);
 
+        
+        //If the type of a particular object in grammar is BO, then 
+        //following function will return the exact type of that BO. 
+        //Type could be Int, IntAR, Double, DoubleAR, String, or Byte
         Type getBOType(Path p);
-        //bool validatePath(Node *, string Name); // Validate a given path
+        
+        
 };

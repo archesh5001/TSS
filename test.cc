@@ -6,7 +6,8 @@
  */
 
 #include "TSSParser.h"
-#include <iostream.h>
+#include <iostream>
+using namespace std;
 
 int main() {
 
@@ -17,24 +18,33 @@ int main() {
             "<Object1Structure:SO> -= <Object1StructureBase:IA>[];"
             , false);
 
-    parser.validateGrammar();
-    vector<PathComponent> vect;
-    if (parser.storeAccessCode("StructureObject.Object1.Object1Structure.Object1StructureBase[5]", vect)) {
-        //print the vector
-        cout << "Path: ";
-        for (int i = 0; i < vect.size(); i++) {
-            cout << vect.at(i).label;
-            if (i != vect.size() - 1)
-                cout << "->";
-        }
+    if (parser.validateGrammar()) {
+        vector<PathComponent> vect;
+        if (parser.storeAccessCode("StructureObject.Object1.Object1Structure.Object1StructureBase[5]", vect)) {
+            //print the vector
+            cout << "Path: ";
+            for (int i = 0; i < vect.size(); i++) {
+                cout << vect.at(i).label;
+                if (i != vect.size() - 1)
+                    cout << "->";
+            }
 
-        cout << "\nAccess codes: ";
-        for (int i = 0; i < vect.size(); i++) {
-            cout << vect.at(i).accessCode;
-            if (i != vect.size() - 1)
-                cout << ":";
+            cout << "\nAccess codes: ";
+            for (int i = 0; i < vect.size(); i++) {
+                cout << vect.at(i).accessCode;
+                if (i != vect.size() - 1)
+                    cout << ":";
+            }
+            cout << endl;
         }
-        cout << endl;
+        
+        Path p(vect);
+        cout << "Is BO? " << parser.isBO(p) << endl;
+        cout << "Is SO? " << parser.isSO(p) << endl;
+        cout << "Is List? " << parser.isList(p) << endl;
+        cout << "Is RO? " << parser.isRef(p) << endl;
+        cout << "Type: " << parser.getBOType(p) << endl;
+
     }
 
     return 0;
