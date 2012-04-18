@@ -438,15 +438,21 @@ Type TSSParser::getBOType(Path p) {
                 current = current->children.at(p.vect.at(i).label);
             } else {
                 cout << p.vect.at(i).label << " is not a valid path\n";
-                exit(1);
+                return Undefined;
             }
         }
     } else {
         cout << "Path is invalid\n";
-        exit(1);
+        return Undefined;
     }
     
-    return current->type;
+    if(current->isBO)
+        return current->type;
+    else {
+        cout << "Object is not BO\n";
+        return Undefined;
+    }
+            
 }
 
 void TSSParser::print() {

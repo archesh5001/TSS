@@ -23,7 +23,7 @@
 
 using namespace std;
 
-enum Type {Int, IntAR, Double, DoubleAR, String, Byte};
+enum Type {Int, IntAR, Double, DoubleAR, String, Byte, Undefined};
 
 
 
