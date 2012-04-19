@@ -22,6 +22,8 @@ TSSParser::TSSParser(string grammar, bool isFile) {
 
 TSSParser::~TSSParser() {
     //delete all the nodes in grammar tree
+    ROPointers.clear();
+    ROObjects.clear();
     delete grammar;
 
 }
@@ -54,10 +56,18 @@ bool TSSParser::validateGrammar() {
     //cout << "vector size: " << nodes.size() << endl;
     //print();
     cout << "Building done\n";
+
+    for (int i = 0; i < ROPointers.size(); i++) {
+        cout << "Pointer(" << i << ") --> " << ROPointers.at(i) << endl;
+    }
+    for (int i = 0; i < ROObjects.size(); i++) {
+        cout << "Object(" << i << ") --> " << ROObjects.at(i) << endl;
+    }
+
     linkTrees();
     cout << "Linking done\n";
     // print();
-    return true;
+    return true && matchRO();
 
 }
 
@@ -69,7 +79,7 @@ void TSSParser::buildTree(string &str) {
     //4. [](*pointerName);  -- Here we ingore (*pointerName) i.e we don't create node for it
     //5 (*pointerName) -- again, we don't create node for this
     //6 []
-    //  (*pointerName);
+
 
 
     //type 1
@@ -87,6 +97,22 @@ void TSSParser::buildTree(string &str) {
         //cout << "It is [];\n";
         current->isList = true;
 
+        //now, after ']', we can have a RO pointer. Check if this is the case
+
+        if (str.size() > 3) {
+            //yes, it is the case. Extract the name of the RO pointer, and store it in vector.
+
+            string temp = "";
+            int index = 4;
+            while (str.at(index) != ')') {
+                temp += str.at(index);
+                ++index;
+            }
+
+            //store this in RO pointer vector
+            ROPointers.push_back(temp);
+        }
+
         //check if we have ; at the end 
         if (str.at(str.size() - 1) == ';') {
             //cout << "Storing: " << head->name << endl;
@@ -97,7 +123,18 @@ void TSSParser::buildTree(string &str) {
             childCounter = 0;
         }
     } else if (str.at(0) == '(') {
-        //skip this part. But check if we have ';' in end
+        //Extract RO pointer. 
+        string temp = "";
+        int index = 2;
+        while (str.at(index) != ')') {
+            temp += str.at(index);
+            ++index;
+        }
+
+        //store this in RO pointer vector
+        ROPointers.push_back(temp);
+
+        //check if we have ';' in end
         if (str.at(str.size() - 1) == ';') {
             //cout << "Storing: " << head->name << endl;
             Node * myHead = new Node;
@@ -109,14 +146,14 @@ void TSSParser::buildTree(string &str) {
     } else {
         //Only come here if we have string case 1
 
-        if(head == NULL){
+        if (head == NULL) {
             head = new Node();
             head->no_of_children = 0;
             current = head;
         } else {
             //create new child node
             current = new Node();
-            
+
             if (head->no_of_children == 0) {
                 //only create 1 pointer to first child
                 head->child = current;
@@ -155,29 +192,32 @@ void TSSParser::buildTree(string &str) {
         //set appropriate flag
         if ((temp.compare("SO")) == 0)
             current->isSO = true;
-        else if ((temp.compare("RO")) == 0)
+        else if ((temp.compare("RO")) == 0) {
             current->isRO = true;
-        else {
+            //also store this in ROObject vector
+            string temp (current->name);
+            ROObjects.push_back(temp);
+        }else {
             current->isBO = true;
             //now store the appropriate type
-            if(temp.compare("I") == 0)
+            if (temp.compare("I") == 0)
                 current->type = Int;
-            else if(temp.compare("IA") == 0)
+            else if (temp.compare("IA") == 0)
                 current->type = IntAR;
-            else if(temp.compare("D") == 0)
+            else if (temp.compare("D") == 0)
                 current->type = Double;
-            else if(temp.compare("DA") == 0)
+            else if (temp.compare("DA") == 0)
                 current->type = DoubleAR;
-            else if(temp.compare("S") == 0)
+            else if (temp.compare("S") == 0)
                 current->type = String;
-            else if(temp.compare("B") == 0)
+            else if (temp.compare("B") == 0)
                 current->type = Byte;
         }
 
         //link this child to the head
-       // if(!headNull) {
-           if (head->child != NULL)
-              head->children.insert(pair<string, Node*>(current->name, current));
+        // if(!headNull) {
+        if (head->child != NULL)
+            head->children.insert(pair<string, Node*>(current->name, current));
         //}
     }
 
@@ -331,15 +371,15 @@ bool TSSParser::isBO(Path p) {
         retVal = false;
         cout << "Path is invalid\n";
     }
-    
-    if(retVal) {
-        if(current->isBO)
+
+    if (retVal) {
+        if (current->isBO)
             retVal = true;
         else
             retVal = false;
     }
-        
-    
+
+
     return retVal;
 }
 
@@ -360,15 +400,15 @@ bool TSSParser::isSO(Path p) {
         retVal = false;
         cout << "Path is invalid\n";
     }
-    
-    if(retVal) {
-        if(current->isSO)
+
+    if (retVal) {
+        if (current->isSO)
             retVal = true;
         else
             retVal = false;
     }
-        
-    
+
+
     return retVal;
 }
 
@@ -389,15 +429,15 @@ bool TSSParser::isList(Path p) {
         retVal = false;
         cout << "Path is invalid\n";
     }
-    
-    if(retVal) {
-        if(current->isList)
+
+    if (retVal) {
+        if (current->isList)
             retVal = true;
         else
             retVal = false;
     }
-        
-    
+
+
     return retVal;
 }
 
@@ -418,15 +458,15 @@ bool TSSParser::isRef(Path p) {
         retVal = false;
         cout << "Path is invalid\n";
     }
-    
-    if(retVal) {
-        if(current->isRO)
+
+    if (retVal) {
+        if (current->isRO)
             retVal = true;
         else
             retVal = false;
     }
-        
-    
+
+
     return retVal;
 }
 
@@ -445,14 +485,14 @@ Type TSSParser::getBOType(Path p) {
         cout << "Path is invalid\n";
         return Undefined;
     }
-    
-    if(current->isBO)
+
+    if (current->isBO)
         return current->type;
     else {
         cout << "Object is not BO\n";
         return Undefined;
     }
-            
+
 }
 
 void TSSParser::print() {
@@ -480,6 +520,34 @@ void TSSParser::print() {
         printQueue.pop();
     }
 
+}
+
+bool TSSParser :: matchRO() {
+    int pointerSize = ROPointers.size();
+    int objectSize = ROObjects.size();
+    bool found = false;
+    if(pointerSize != objectSize) {
+        cout << "Either pointer to RO Object is missing OR RO object is undefined\n ";
+        return false;               
+    }else {
+        for(int i = 0; i < pointerSize; i++) {
+            for (int j = 0; j < objectSize; j++) {
+                if(ROPointers.at(i).compare(ROObjects.at(j)) == 0) {
+                    found = true;
+                    break;
+                }
+            }
+            
+            if(!found) {
+                cout << "RO Object or RO pointer not found\n";
+                return false;
+            }
+            
+            found = false;
+        }
+    }
+    
+    return true;
 }
 
 void TSSParser::cleanUp() {

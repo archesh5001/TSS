@@ -69,6 +69,11 @@ class TSSParser
         Node *current;
         string * grammar;
         int childCounter;
+        //this vector will store RO objects encountered during parsing
+        vector<string> ROObjects; 
+        //this vector will store RO pointers (*pointer) encountered during parsing
+        vector<string> ROPointers;
+        
         list<Node*> nodes;
         Node * getParentNode();
        
@@ -76,6 +81,8 @@ class TSSParser
         //this function is need to store heads in vector
         void copy(Node *a, Node *b);
         
+        //this function is used to link individual nodes formed in buildTree() function. It 
+        //is used by linkTree() function
         void linkNodes(Node *a ,Node *b);
         
         //this function makes individual tree of each line
@@ -87,8 +94,13 @@ class TSSParser
         //using BFS algorithm
         void linkTrees();
         
-        //this function prints the individual trees stored in the list
+        //this function prints the tree
         void print();
+        
+        //this function will check for each RO object there is a corresponding
+        //RO Pointer i.e 1-1 relation. If it is the case, then the function will
+        //return true
+        bool matchRO();
 
         //visit all nodes and delete it to free up memory
         void cleanUp();
