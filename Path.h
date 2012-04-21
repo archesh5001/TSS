@@ -26,7 +26,7 @@ public:
     Path();
     Path(vector<PathComponent>);
     ~Path();
-    vector <PathComponent> vect;
+    vector <PathComponent> vPath;
 };
 
 
