@@ -347,22 +347,22 @@ bool TSSParser::storeAccessCode(string path, vector<PathComponent>& pathVector) 
     return returnVal;
 }
 
-int * TSSParser::genAccessCode(Path p) {
-    int * accessCodes = new int[p.vect.size()];
-    for (int i = 0; i < p.vect.size(); i++)
-        accessCodes[i] = p.vect.at(i).accessCode;
+int * TSSParser::genAccessCode(Path *p) {
+    int * accessCodes = new int[p->vect.size()];
+    for (int i = 0; i < p->vect.size(); i++)
+        accessCodes[i] = p->vect.at(i).accessCode;
     return accessCodes;
 }
 
-bool TSSParser::isBO(Path p) {
+bool TSSParser::isBO(Path *p) {
     bool retVal = true;
     Node * current = head;
-    if (p.vect.at(0).label.compare(head->name) == 0) {
-        for (int i = 1; i < p.vect.size(); i++) {
-            if (current->children.find(p.vect.at(i).label) != current->children.end()) {
-                current = current->children.at(p.vect.at(i).label);
+    if (p->vect.at(0).label.compare(head->name) == 0) {
+        for (int i = 1; i < p->vect.size(); i++) {
+            if (current->children.find(p->vect.at(i).label) != current->children.end()) {
+                current = current->children.at(p->vect.at(i).label);
             } else {
-                cout << p.vect.at(i).label << " is not a valid path\n";
+                cout << p->vect.at(i).label << " is not a valid path\n";
                 retVal = false;
                 break;
             }
@@ -383,15 +383,15 @@ bool TSSParser::isBO(Path p) {
     return retVal;
 }
 
-bool TSSParser::isSO(Path p) {
+bool TSSParser::isSO(Path *p) {
     bool retVal = true;
     Node * current = head;
-    if (p.vect.at(0).label.compare(head->name) == 0) {
-        for (int i = 1; i < p.vect.size(); i++) {
-            if (current->children.find(p.vect.at(i).label) != current->children.end()) {
-                current = current->children.at(p.vect.at(i).label);
+    if (p->vect.at(0).label.compare(head->name) == 0) {
+        for (int i = 1; i < p->vect.size(); i++) {
+            if (current->children.find(p->vect.at(i).label) != current->children.end()) {
+                current = current->children.at(p->vect.at(i).label);
             } else {
-                cout << p.vect.at(i).label << " is not a valid path\n";
+                cout << p->vect.at(i).label << " is not a valid path\n";
                 retVal = false;
                 break;
             }
@@ -412,15 +412,15 @@ bool TSSParser::isSO(Path p) {
     return retVal;
 }
 
-bool TSSParser::isList(Path p) {
+bool TSSParser::isList(Path *p) {
     bool retVal = true;
     Node * current = head;
-    if (p.vect.at(0).label.compare(head->name) == 0) {
-        for (int i = 1; i < p.vect.size(); i++) {
-            if (current->children.find(p.vect.at(i).label) != current->children.end()) {
-                current = current->children.at(p.vect.at(i).label);
+    if (p->vect.at(0).label.compare(head->name) == 0) {
+        for (int i = 1; i < p->vect.size(); i++) {
+            if (current->children.find(p->vect.at(i).label) != current->children.end()) {
+                current = current->children.at(p->vect.at(i).label);
             } else {
-                cout << p.vect.at(i).label << " is not a valid path\n";
+                cout << p->vect.at(i).label << " is not a valid path\n";
                 retVal = false;
                 break;
             }
@@ -441,15 +441,15 @@ bool TSSParser::isList(Path p) {
     return retVal;
 }
 
-bool TSSParser::isRef(Path p) {
+bool TSSParser::isRef(Path *p) {
     bool retVal = true;
     Node * current = head;
-    if (p.vect.at(0).label.compare(head->name) == 0) {
-        for (int i = 1; i < p.vect.size(); i++) {
-            if (current->children.find(p.vect.at(i).label) != current->children.end()) {
-                current = current->children.at(p.vect.at(i).label);
+    if (p->vect.at(0).label.compare(head->name) == 0) {
+        for (int i = 1; i < p->vect.size(); i++) {
+            if (current->children.find(p->vect.at(i).label) != current->children.end()) {
+                current = current->children.at(p->vect.at(i).label);
             } else {
-                cout << p.vect.at(i).label << " is not a valid path\n";
+                cout << p->vect.at(i).label << " is not a valid path\n";
                 retVal = false;
                 break;
             }
@@ -470,14 +470,14 @@ bool TSSParser::isRef(Path p) {
     return retVal;
 }
 
-Type TSSParser::getBOType(Path p) {
+Type TSSParser::getBOType(Path *p) {
     Node * current = head;
-    if (p.vect.at(0).label.compare(head->name) == 0) {
-        for (int i = 1; i < p.vect.size(); i++) {
-            if (current->children.find(p.vect.at(i).label) != current->children.end()) {
-                current = current->children.at(p.vect.at(i).label);
+    if (p->vect.at(0).label.compare(head->name) == 0) {
+        for (int i = 1; i < p->vect.size(); i++) {
+            if (current->children.find(p->vect.at(i).label) != current->children.end()) {
+                current = current->children.at(p->vect.at(i).label);
             } else {
-                cout << p.vect.at(i).label << " is not a valid path\n";
+                cout << p->vect.at(i).label << " is not a valid path\n";
                 return Undefined;
             }
         }

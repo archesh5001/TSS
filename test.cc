@@ -12,11 +12,11 @@ using namespace std;
 int main() {
 
 
-    TSSParser parser("<StructureObject:SO> -= <Object1:SO>(*object1Ref) <Object2:SO>[](*Object2Ref) <Object3:RO>[];"
+    TSSParser parser("<StructureObject:SO> -= <Object1:SO>(*object1Ref) <Object2:SO>[](*Object2Ref) <Object2Ref:RO>[];"
             "<Object1:SO> -= <Object1Base:DA>[] <Object1Structure:SO>(*object1StructRef);"
             "<Object2:SO> -= <Object2Base:S>;"
             "<Object1Structure:SO> -= <Object1StructureBase:IA>[];"
-            , false);
+             , false);
 
     if (parser.validateGrammar()) {
         vector<PathComponent> vect;
@@ -38,13 +38,13 @@ int main() {
             cout << endl;
         }
         
-        Path p(vect);
+        Path * p = new Path(vect);
         cout << "Is BO? " << parser.isBO(p) << endl;
         cout << "Is SO? " << parser.isSO(p) << endl;
         cout << "Is List? " << parser.isList(p) << endl;
         cout << "Is RO? " << parser.isRef(p) << endl;
         cout << "Type: " << parser.getBOType(p) << endl;
-
+        delete p;
     }
 
     return 0;

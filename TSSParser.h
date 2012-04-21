@@ -122,21 +122,21 @@ class TSSParser
         //This function will simply get pathVector from Path p object and
         //extract the access code from it. It will then return an int array
         //that contains the access code.
-        int* genAccessCode(Path p);           // Generate access code
+        int* genAccessCode(Path *p);           // Generate access code
 
         //This following 4 functions will traverse the grammar tree
         //and check whether the last object specified in path is BO, 
         // SO, List, or Ref.
-        bool isBO(Path p);
-        bool isSO(Path p);
-        bool isList(Path p);
-        bool isRef(Path p);
+        bool isBO(Path *p);
+        bool isSO(Path *p);
+        bool isList(Path *p);
+        bool isRef(Path *p);
 
         
         //If the type of a particular object in grammar is BO, then 
         //following function will return the exact type of that BO. 
         //Type could be Int, IntAR, Double, DoubleAR, String, or Byte
-        Type getBOType(Path p);
+        Type getBOType(Path *p);
         
         
 };
