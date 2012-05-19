@@ -12,7 +12,7 @@
  * Flag      ::= 'SO' | 'RO' | 'I' | 'D' | 'IA' | 'DA' | 'S' | 'B'
  * ident     ::= identstart | identpart*
  * identstart::= A-Z | a-z
- * identpart ::= identstart | (0-9)*  
+ * identpart ::= identstart | (0-9)  
  * 
  * 
  * All the nonterminal symbols have function of their own. Only exception are
@@ -36,8 +36,23 @@ private:
 
     bool Program();
     bool Stmt();
+    
+    /*
+     * TagHead is simply the Tag that we find on LHS of grammar. 
+     * For instance, in following statement
+     * <region:SO> -= <segment:BO>
+     * 
+     * <region:SO> is TagHead
+     */
     bool TagHead();
+    
+    /*
+     * TagList is any Tag with [] to indicate that it is 
+     * a list object
+     */
     bool TagList();
+    
+    
     bool Tag();
     bool Reference();
     bool Name();
